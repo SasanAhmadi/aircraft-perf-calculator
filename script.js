@@ -10,23 +10,29 @@ function calculateTakeoff() {
         return;
     }
 
-    let baseDistance = 1000; // Base takeoff distance in feet (for standard conditions)
+    let baseGroundRoll = 1000; // Approximate base ground roll in feet at sea level, 15°C, no wind
+    let baseTotalDistance = 1600; // Approximate base total distance to clear 50 ft obstacle
 
-    // Adjust for altitude (rough estimate: increase 10% per 1000 ft)
-    baseDistance *= 1 + (altitude / 1000) * 0.1;
+    // Adjust for altitude (increase 10% per 1000 ft)
+    baseGroundRoll *= 1 + (altitude / 1000) * 0.1;
+    baseTotalDistance *= 1 + (altitude / 1000) * 0.1;
 
     // Adjust for temperature (increase 1% per °C above 15°C)
     if (temperature > 15) {
-        baseDistance *= 1 + ((temperature - 15) * 0.01);
+        baseGroundRoll *= 1 + ((temperature - 15) * 0.01);
+        baseTotalDistance *= 1 + ((temperature - 15) * 0.01);
     }
 
     // Adjust for wind (reduce 5% per 5 knots headwind)
-    baseDistance *= 1 - (wind / 5) * 0.05;
+    baseGroundRoll *= 1 - (wind / 5) * 0.05;
+    baseTotalDistance *= 1 - (wind / 5) * 0.05;
 
     // Adjust for runway surface
     if (runway === "grass") {
-        baseDistance *= 1.15; // Increase by 15% for grass
+        baseGroundRoll *= 1.15; // Increase by 15% for grass
+        baseTotalDistance *= 1.15;
     }
 
-    document.getElementById("result").textContent = Math.round(baseDistance);
+    document.getElementById("groundRoll").textContent = Math.round(baseGroundRoll);
+    document.getElementById("totalDistance").textContent = Math.round(baseTotalDistance);
 }
