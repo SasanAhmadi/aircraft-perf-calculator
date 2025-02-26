@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C172 Takeoff Distance Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>C172 Takeoff Distance Calculator</h1>
+        <label for="weight">Aircraft Weight (lbs):</label>
+        <input type="number" id="weight" placeholder="Example: 2300">
+
+        <label for="altitude">Altitude (ft):</label>
+        <input type="number" id="altitude" placeholder="Example: 5000">
+
+        <label for="temperature">Temperature (°C):</label>
+        <input type="number" id="temperature" placeholder="Example: 20">
+
+        <label for="wind">Headwind (knots):</label>
+        <input type="number" id="wind" placeholder="Example: 5">
+
+        <label for="runway">Runway Surface:</label>
+        <select id="runway">
+            <option value="paved">Paved</option>
+            <option value="grass">Grass</option>
+        </select>
+
+        <button onclick="calculateTakeoff()">Calculate</button>
+
+        <h2>Takeoff Distance: <span id="result">--</span> ft</h2>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
