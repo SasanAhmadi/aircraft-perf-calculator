@@ -1,7 +1,7 @@
 {
-  "name": "C172M Takeoff Calculator",
-  "short_name": "C172M TO Calc",
-  "description": "A tool to calculate C172M takeoff distances.",
+  "name": "C172M Distance Calculator",
+  "short_name": "C172M Calc",
+  "description": "A tool to calculate C172M takeoff/landing distances.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
