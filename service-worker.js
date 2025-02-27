@@ -1,9 +1,23 @@
-self.addEventListener("install", (event) => {
-    self.skipWaiting();
+self.addEventListener("install", event => {
+    event.waitUntil(
+        caches.open("c172-cache").then(cache => {
+            return cache.addAll([
+                "/",
+                "/index.html",
+                "/script.js",
+                "/styles.css",
+                "/manifest.json",
+                "/icons/icon-192x192.png",
+                "/icons/icon-512x512.png"
+            ]);
+        })
+    );
 });
 
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", event => {
     event.respondWith(
-        fetch(event.request, { cache: "no-store" }) // Forces fresh content
+        caches.match(event.request).then(response => {
+            return response || fetch(event.request);
+        })
     );
 });

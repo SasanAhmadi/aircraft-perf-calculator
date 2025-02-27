@@ -1,3 +1,9 @@
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js")
+        .then(() => console.log("Service Worker Registered"))
+        .catch(err => console.log("Service Worker Registration Failed", err));
+}
+
 // POH takeoff distance data (example values, replace with actual POH numbers)
 const takeoffData_2300 = [
     { altitude: 0, temperatures: [0, 10, 20, 30, 40], groundRoll: [775, 835, 895, 960, 1030], totalDistance: [1380, 1475, 1575, 1685, 1795] },
