@@ -41,6 +41,19 @@ const takeoffData_1900 = [
     { altitude: 8000, temperatures: [0, 10, 20, 30, 40], groundRoll: [1060, 1140, 1225, 1320, 1415], totalDistance: [1900, 2040, 2190, 2350, 2520]  }
 ];
 
+const landingData_2300 = [
+    { altitude: 0,    temperatures: [0, 10, 20, 30, 40], groundRoll: [495, 510, 530, 545, 565],      totalDistance: [1205, 1235, 1265, 1295, 1330]  },
+    { altitude: 1000, temperatures: [0, 10, 20, 30, 40], groundRoll: [510, 530, 550, 565, 585],      totalDistance: [1235, 1265, 1300, 1330, 1365]  },
+    { altitude: 2000, temperatures: [0, 10, 20, 30, 40], groundRoll: [530, 550, 570, 590, 610],      totalDistance: [1265, 1300, 1335, 1370, 1405]  },
+    { altitude: 3000, temperatures: [0, 10, 20, 30, 40], groundRoll: [550, 570, 590, 610, 630],      totalDistance: [1300, 1335, 1370, 1405, 1440]  },
+    { altitude: 4000, temperatures: [0, 10, 20, 30, 40], groundRoll: [570, 590, 615, 635, 655],      totalDistance: [1335, 1370, 1410, 1445, 1480]  },
+    { altitude: 5000, temperatures: [0, 10, 20, 30, 40], groundRoll: [590, 615, 635, 655, 680],      totalDistance: [1370, 1415, 1450, 1485, 1525]  },
+    { altitude: 6000, temperatures: [0, 10, 20, 30, 40], groundRoll: [615, 640, 660, 685, 705],      totalDistance: [1415, 1455, 1490, 1535, 1570]  },
+    { altitude: 7000, temperatures: [0, 10, 20, 30, 40], groundRoll: [640, 660, 685, 710, 730],      totalDistance: [1455, 1495, 1535, 1575, 1615]  },
+    { altitude: 8000, temperatures: [0, 10, 20, 30, 40], groundRoll: [665, 690, 710, 735, 760],      totalDistance: [1500, 1540, 1580, 1620, 1665]  }
+];
+
+
 // Bilinear interpolation function
 function bilinearInterpolate(x1, x2, y1, y2, q11, q12, q21, q22, x, y) {
     let r1 = interpolate(x1, q11, x2, q21, x);
@@ -60,96 +73,112 @@ const takeoffData = {
     1900: takeoffData_1900
 };
 
-// Function to get interpolated takeoff data between two weight classes
-function interpolateTakeoffData(weight, altitude, temperature) {
-    const weights = [1900, 2100, 2300];
+const landingData = {
+    2300: landingData_2300,
+};
 
-    // Find bounding weights
-    let lowerWeight, upperWeight;
-    for (let i = 0; i < weights.length - 1; i++) {
-        if (weight >= weights[i] && weight <= weights[i + 1]) {
-            lowerWeight = weights[i];
-            upperWeight = weights[i + 1];
+// Interpolate ground roll and total distance for each dataset
+function getInterpolatedDistance(data, altitude, temperature) {
+    let lowerAlt, upperAlt;
+
+    for (let i = 0; i < data.length - 1; i++) {
+        if (altitude >= data[i].altitude && altitude <= data[i + 1].altitude) {
+            lowerAlt = data[i];
+            upperAlt = data[i + 1];
             break;
         }
     }
 
-    if (!lowerWeight || !upperWeight) {
-        alert("Weight out of range (1900-2300 lbs)");
+    if (!lowerAlt || !upperAlt) {
+        alert("Altitude out of range (0-8000 ft)");
         return;
     }
 
-    // Retrieve data for the two closest weight categories
-    let lowerData = takeoffData[lowerWeight];
-    let upperData = takeoffData[upperWeight];
-
-    // Interpolate ground roll and total distance for each dataset
-    function getInterpolatedDistance(data) {
-        let lowerAlt, upperAlt;
-
-        for (let i = 0; i < data.length - 1; i++) {
-            if (altitude >= data[i].altitude && altitude <= data[i + 1].altitude) {
-                lowerAlt = data[i];
-                upperAlt = data[i + 1];
-                break;
-            }
+    let lowerTempIndex, upperTempIndex;
+    for (let i = 0; i < lowerAlt.temperatures.length - 1; i++) {
+        if (temperature >= lowerAlt.temperatures[i] && temperature <= lowerAlt.temperatures[i + 1]) {
+            lowerTempIndex = i;
+            upperTempIndex = i + 1;
+            break;
         }
-
-        if (!lowerAlt || !upperAlt) {
-            alert("Altitude out of range (0-8000 ft)");
-            return;
-        }
-
-        let lowerTempIndex, upperTempIndex;
-        for (let i = 0; i < lowerAlt.temperatures.length - 1; i++) {
-            if (temperature >= lowerAlt.temperatures[i] && temperature <= lowerAlt.temperatures[i + 1]) {
-                lowerTempIndex = i;
-                upperTempIndex = i + 1;
-                break;
-            }
-        }
-
-        if (lowerTempIndex === undefined || upperTempIndex === undefined) {
-            alert("Temperature out of range (0-40°C)");
-            return;
-        }
-
-        let g11 = lowerAlt.groundRoll[lowerTempIndex];
-        let g12 = lowerAlt.groundRoll[upperTempIndex];
-        let g21 = upperAlt.groundRoll[lowerTempIndex];
-        let g22 = upperAlt.groundRoll[upperTempIndex];
-
-        let t11 = lowerAlt.totalDistance[lowerTempIndex];
-        let t12 = lowerAlt.totalDistance[upperTempIndex];
-        let t21 = upperAlt.totalDistance[lowerTempIndex];
-        let t22 = upperAlt.totalDistance[upperTempIndex];
-
-        let groundRoll = bilinearInterpolate(
-            lowerAlt.altitude, upperAlt.altitude,
-            lowerAlt.temperatures[lowerTempIndex], lowerAlt.temperatures[upperTempIndex],
-            g11, g12, g21, g22, altitude, temperature
-        );
-
-        let totalDistance = bilinearInterpolate(
-            lowerAlt.altitude, upperAlt.altitude,
-            lowerAlt.temperatures[lowerTempIndex], lowerAlt.temperatures[upperTempIndex],
-            t11, t12, t21, t22, altitude, temperature
-        );
-
-        return { groundRoll, totalDistance };
     }
 
-    let lowerResult = getInterpolatedDistance(lowerData);
-    let upperResult = getInterpolatedDistance(upperData);
+    if (lowerTempIndex === undefined || upperTempIndex === undefined) {
+        alert("Temperature out of range (0-40°C)");
+        return;
+    }
 
-    // Final interpolation between weight categories
-    let groundRoll = interpolate(lowerWeight, lowerResult.groundRoll, upperWeight, upperResult.groundRoll, weight);
-    let totalDistance = interpolate(lowerWeight, lowerResult.totalDistance, upperWeight, upperResult.totalDistance, weight);
+    let g11 = lowerAlt.groundRoll[lowerTempIndex];
+    let g12 = lowerAlt.groundRoll[upperTempIndex];
+    let g21 = upperAlt.groundRoll[lowerTempIndex];
+    let g22 = upperAlt.groundRoll[upperTempIndex];
+
+    let t11 = lowerAlt.totalDistance[lowerTempIndex];
+    let t12 = lowerAlt.totalDistance[upperTempIndex];
+    let t21 = upperAlt.totalDistance[lowerTempIndex];
+    let t22 = upperAlt.totalDistance[upperTempIndex];
+
+    let groundRoll = bilinearInterpolate(
+        lowerAlt.altitude, upperAlt.altitude,
+        lowerAlt.temperatures[lowerTempIndex], lowerAlt.temperatures[upperTempIndex],
+        g11, g12, g21, g22, altitude, temperature
+    );
+
+    let totalDistance = bilinearInterpolate(
+        lowerAlt.altitude, upperAlt.altitude,
+        lowerAlt.temperatures[lowerTempIndex], lowerAlt.temperatures[upperTempIndex],
+        t11, t12, t21, t22, altitude, temperature
+    );
 
     return { groundRoll, totalDistance };
 }
 
-function calculateTakeoff() {
+// Function to get interpolated takeoff data between two weight classes
+function interpolateData(weight, altitude, temperature, type) {
+    const data = type === "takeoff" ? takeoffData : landingData;
+
+    let groundRoll, totalDistance;
+
+    let lowerData, upperData;
+
+    if (type === "takeoff") {
+        let lowerWeight, upperWeight;
+        const weights = [1900, 2100, 2300];
+        // Find bounding weights
+        for (let i = 0; i < weights.length - 1; i++) {
+            if (weight >= weights[i] && weight <= weights[i + 1]) {
+                lowerWeight = weights[i];
+                upperWeight = weights[i + 1];
+                break;
+            }
+        }
+
+        if (!lowerWeight || !upperWeight) {
+            alert("Weight out of range (1900-2300 lbs)");
+            return;
+        }
+
+        // Retrieve data for the two closest weight categories
+        lowerData = data[lowerWeight];
+        upperData = data[upperWeight];
+
+        let lowerResult = getInterpolatedDistance(lowerData, altitude, temperature);
+        let upperResult = getInterpolatedDistance(upperData, altitude, temperature);
+
+        // Final interpolation between weight categories
+        groundRoll = interpolate(lowerWeight, lowerResult.groundRoll, upperWeight, upperResult.groundRoll, weight);
+        totalDistance = interpolate(lowerWeight, lowerResult.totalDistance, upperWeight, upperResult.totalDistance, weight);
+    } else {
+        let result = getInterpolatedDistance(data[2300], altitude, temperature);
+        upperData = data[2300];
+        groundRoll = result.groundRoll;
+        totalDistance = result.totalDistance;
+    }
+
+    return { groundRoll, totalDistance };
+}
+
+function calculate() {
     const altitude = parseFloat(document.getElementById("altitude").value);
     const temperature = parseFloat(document.getElementById("temperature").value);
     const weight = parseFloat(document.getElementById("weight").value); // New weight input
@@ -166,7 +195,7 @@ function calculateTakeoff() {
         return;
     }
 
-    let { groundRoll, totalDistance } = interpolateTakeoffData(weight, altitude, temperature);
+    let { groundRoll, totalDistance } = interpolateData(weight, altitude, temperature, "takeoff");
 
     // Wind adjustment: Assume 10% reduction per 9 knots headwind, increase for tailwind
     if (wind >= 0) {
@@ -184,11 +213,38 @@ function calculateTakeoff() {
         totalDistance += grassEffect;
     }
 
-    document.getElementById("groundRoll").textContent = Math.round(groundRoll);
-    document.getElementById("totalDistance").textContent = Math.round(totalDistance);
+    document.getElementById("takeoffGroundRoll").textContent = Math.round(groundRoll);
+    document.getElementById("takeoffTotalDistance").textContent = Math.round(totalDistance);
+
+    let { groundRoll: landingGroundRoll, totalDistance: landingTotalDistance } = interpolateData(2300, altitude, temperature, "landing");
+
+    // Wind adjustment:
+    if (wind >= 0) {
+        landingGroundRoll *= 1 - (wind / 9) * 0.1;
+        landingTotalDistance *= 1 - (wind / 9) * 0.1;
+    } else {
+        let tailwind = Math.abs(wind);
+        if (tailwind <= 10) {
+            landingGroundRoll *= 1 + (tailwind / 2) * 0.1;
+            landingTotalDistance *= 1 + (tailwind / 2) * 0.1;
+        } else {
+            alert("Tailwind greater than 10 knots is not recommended.");
+            return;
+        }
+    }
+
+    // Runway surface adjustment:
+    if (runway === "grass") {
+        let grassEffect = landingGroundRoll * 0.45;
+        landingGroundRoll += grassEffect;
+        landingTotalDistance += grassEffect;
+    }
+
+    document.getElementById("landingGroundRoll").textContent = Math.round(landingGroundRoll);
+    document.getElementById("landingTotalDistance").textContent = Math.round(landingTotalDistance);
 }
 
 document.getElementById("takeoffForm").addEventListener("submit", function(event) {
     event.preventDefault();  // Prevent default form submission behavior
-    calculateTakeoff();
+    calculate();
 });
