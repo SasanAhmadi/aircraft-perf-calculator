@@ -3,42 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>C172 Takeoff Distance Calculator</title>
+    <title>C172M Takeoff Distance Calculator</title>
     <link rel="stylesheet" href="styles.css">
-    <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/service-worker.js")
-            .then(() => console.log("Service Worker Registered"))
-            .catch((error) => console.log("Service Worker Registration Failed:", error));
-        }
-    </script>
+    <script defer src="script.js"></script>  
 </head>
 <body>
     <div class="container">
-        <h1>C172 Takeoff Distance Calculator</h1>
-        <label for="weight">Aircraft Weight (lbs):</label>
-        <input type="number" id="weight" placeholder="Example: 2300">
+        <h1>Cessna 172M Takeoff Distance Calculator</h1>
 
-        <label for="altitude">Altitude (ft):</label>
-        <input type="number" id="altitude" placeholder="Example: 5000">
+        <form id="takeoffForm">
+            <label for="weight">Aircraft Weight (lbs):</label>
+            <input type="number" id="weight" min="1900" max="2300" step="1" required>
 
-        <label for="temperature">Temperature (°C):</label>
-        <input type="number" id="temperature" placeholder="Example: 20">
+            <label for="altitude">Altitude (ft):</label>
+            <input type="number" id="altitude" required>
 
-        <label for="wind">Headwind (knots):</label>
-        <input type="number" id="wind" placeholder="Example: 5">
+            <label for="temperature">Temperature (°C):</label>
+            <input type="number" id="temperature" required>
 
-        <label for="runway">Runway Surface:</label>
-        <select id="runway">
-            <option value="paved">Paved</option>
-            <option value="grass">Grass</option>
-        </select>
+            <label for="wind">Wind Speed (knots):</label>
+            <input type="number" id="wind" required>
 
-        <button onclick="calculateTakeoff()">Calculate</button>
+            <label for="runway">Runway Type:</label>
+            <select id="runway">
+                <option value="paved">Paved</option>
+                <option value="grass">Grass</option>
+            </select>
 
-        <h2>Ground Roll: <span id="groundRoll">--</span> ft</h2>
-        <h2>Total Distance to Clear 50 ft: <span id="totalDistance">--</span> ft</h2>
+            <button type="submit">Calculate</button>
+        </form>
+
+        <div id="results">
+            <h2>Results:</h2>
+            <p>Ground Roll: <span id="groundRoll">-</span> ft</p>
+            <p>Total Distance (50 ft obstacle): <span id="totalDistance">-</span> ft</p>
+        </div>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
