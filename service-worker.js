@@ -16,8 +16,20 @@ self.addEventListener("install", event => {
 
 self.addEventListener("fetch", event => {
     event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request);
-        })
+        fetch(event.request)
+            .then(response => {
+                // If the request was successful, clone the response and store it in the cache.
+                if (response && response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open("c172-cache").then(cache => {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+                return response;
+            })
+            .catch(() => {
+                // If the network request fails, try to serve the request from the cache.
+                return caches.match(event.request);
+            })
     );
 });
