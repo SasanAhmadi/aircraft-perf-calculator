@@ -1,7 +1,11 @@
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js")
-        .then(() => console.log("Service Worker Registered"))
-        .catch(err => console.log("Service Worker Registration Failed", err));
+        .then(registration => {
+            console.log("Service Worker Registered", registration);
+        })
+        .catch(err => {
+            console.log("Service Worker Registration Failed", err);
+        });
 }
 
 // POH takeoff distance data (example values, replace with actual POH numbers)
@@ -178,10 +182,28 @@ function interpolateData(weight, altitude, temperature, type) {
     return { groundRoll, totalDistance };
 }
 
+function formatAltimeterSetting(event) {
+    let value = event.target.value.replace(/\D/g, ''); // Remove non-digit characters
+    if (value.length > 2) {
+        value = value.slice(0, 2) + '.' + value.slice(2, 4); // Insert dot after the first two digits
+    }
+    event.target.value = value;
+}
+
+function calculatePressureAltitude() {
+    const fieldElevation = parseFloat(document.getElementById("fieldElevation").value);
+    const altimeterSetting = parseFloat(document.getElementById("altimeterSetting").value);
+
+    if (!isNaN(fieldElevation) && !isNaN(altimeterSetting)) {
+        const pressureAltitude = fieldElevation + (29.92 - altimeterSetting) * 1000;
+        document.getElementById("pressureAltitude").value = Math.round(pressureAltitude);
+    }
+}
+
 function calculate() {
     const fieldElevation = parseFloat(document.getElementById("fieldElevation").value);
     const altimeterSetting = parseFloat(document.getElementById("altimeterSetting").value); // New altimeter setting input
-    const altitude = parseFloat(document.getElementById("altitude").value);
+    const altitude = parseFloat(document.getElementById("pressureAltitude").value); // Use renamed pressure altitude field
     const temperature = parseFloat(document.getElementById("temperature").value);
     const weight = parseFloat(document.getElementById("weight").value); // New weight input
     const wind = parseFloat(document.getElementById("wind").value);
@@ -250,3 +272,7 @@ document.getElementById("takeoffForm").addEventListener("submit", function(event
     event.preventDefault();  // Prevent default form submission behavior
     calculate();
 });
+
+document.getElementById("altimeterSetting").addEventListener("input", formatAltimeterSetting);
+document.getElementById("fieldElevation").addEventListener("input", calculatePressureAltitude);
+document.getElementById("altimeterSetting").addEventListener("input", calculatePressureAltitude);
