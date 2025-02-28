@@ -1,16 +1,17 @@
 self.addEventListener("install", event => {
     console.log('Service Worker installing.');
+    const baseUrl = self.location.origin + self.location.pathname.replace(/\/[^/]*$/, '');
     event.waitUntil(
         caches.open("c172-cache-v1").then(cache => {
             return cache.addAll([
-                "/aircraft-perf-calculator/",
-                "/aircraft-perf-calculator/index.html",
-                "/aircraft-perf-calculator/script.js",
-                "/aircraft-perf-calculator/styles.css",
-                "/aircraft-perf-calculator/manifest.json",
-                "/aircraft-perf-calculator/icons/icon-192x192.png",
-                "/aircraft-perf-calculator/icons/icon-512x512.png",
-                "/aircraft-perf-calculator/favicon.ico"
+                `${baseUrl}/`,
+                `${baseUrl}/index.html`,
+                `${baseUrl}/script.js`,
+                `${baseUrl}/styles.css`,
+                `${baseUrl}/manifest.json`,
+                `${baseUrl}/icons/icon-192x192.png`,
+                `${baseUrl}/icons/icon-512x512.png`,
+                `${baseUrl}/favicon.ico`
             ]);
         })
     );
