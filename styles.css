@@ -45,23 +45,3 @@ button:hover {
     margin-top: 20px;
     font-size: 18px;
 }
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.form-group-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.form-group-row label {
-    flex: 1;
-}
-
-.form-group-row input {
-    flex: 1;
-}

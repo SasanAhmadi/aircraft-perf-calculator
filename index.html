@@ -13,16 +13,11 @@
         <h1>Cessna 172M Takeoff/Landing Distance Calculator</h1>
 
         <form id="takeoffForm">
-            <div class="form-group">
-                <div class="form-group-row">
-                    <label>Field Elevation:</label>
-                    <label>Altimeter Setting:</label>
-                </div>
-                <div class="form-group-row">
-                    <input type="number" id="fieldElevation" placeholder="Field Elevation (ft)" required>
-                    <input type="number" id="altimeterSetting" step="0.01" placeholder="Altimeter Setting (inHg)" value="29.92" required>
-                </div>
-            </div>
+            <label for="fieldElevation">Field Elevation (ft):</label>
+            <input type="number" id="fieldElevation" placeholder="Field Elevation (ft)" required>
+
+            <label for="altimeterSetting">Altimeter Setting (inHg):</label>
+            <input type="number" id="altimeterSetting" step="0.01" placeholder="Altimeter Setting (inHg)" value="29.92" required>
 
             <label for="pressureAltitude">Pressure Altitude (ft):</label>
             <input type="number" id="pressureAltitude" readonly required>
