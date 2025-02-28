@@ -1,7 +1,7 @@
 self.addEventListener("install", event => {
     console.log('Service Worker installing.');
     event.waitUntil(
-        caches.open("c172-cache").then(cache => {
+        caches.open("c172-cache-v1").then(cache => {
             return cache.addAll([
                 "/",
                 "/index.html",
@@ -17,7 +17,17 @@ self.addEventListener("install", event => {
 
 self.addEventListener('activate', event => {
     console.log('Service Worker activating.');
-    // Perform activate steps
+    event.waitUntil(
+        caches.keys().then(cacheNames => {
+            return Promise.all(
+                cacheNames.map(cacheName => {
+                    if (cacheName !== "c172-cache-v1") {
+                        return caches.delete(cacheName);
+                    }
+                })
+            );
+        })
+    );
 });
 
 self.addEventListener("fetch", event => {
@@ -33,7 +43,7 @@ self.addEventListener("fetch", event => {
                         // If the request was successful, clone the response and store it in the cache.
                         if (response && response.status === 200) {
                             const responseClone = response.clone();
-                            caches.open("c172-cache").then(cache => {
+                            caches.open("c172-cache-v1").then(cache => {
                                 cache.put(event.request, responseClone);
                             });
                         }
