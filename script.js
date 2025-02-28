@@ -85,7 +85,10 @@ const landingData = {
 // Interpolate ground roll and total distance for each dataset
 function getInterpolatedDistance(data, altitude, temperature) {
     let lowerAlt, upperAlt;
-
+    if (altitude < 0) {
+        // set altitude to be zero
+        altitude = 0;
+    }
     for (let i = 0; i < data.length - 1; i++) {
         if (altitude >= data[i].altitude && altitude <= data[i + 1].altitude) {
             lowerAlt = data[i];
