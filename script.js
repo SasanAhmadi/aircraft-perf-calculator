@@ -179,13 +179,15 @@ function interpolateData(weight, altitude, temperature, type) {
 }
 
 function calculate() {
+    const fieldElevation = parseFloat(document.getElementById("fieldElevation").value);
+    const altimeterSetting = parseFloat(document.getElementById("altimeterSetting").value); // New altimeter setting input
     const altitude = parseFloat(document.getElementById("altitude").value);
     const temperature = parseFloat(document.getElementById("temperature").value);
     const weight = parseFloat(document.getElementById("weight").value); // New weight input
     const wind = parseFloat(document.getElementById("wind").value);
     const runway = document.getElementById("runway").value;
 
-    if (isNaN(altitude) || isNaN(temperature) || isNaN(weight) || isNaN(wind)) {
+    if (isNaN(fieldElevation) || isNaN(altimeterSetting) || isNaN(altitude) || isNaN(temperature) || isNaN(weight) || isNaN(wind)) {
         alert("Please fill all fields correctly.");
         return;
     }
